@@ -2,3 +2,20 @@
 	margin: 1rem;
 	background-color: pink;
 }
+a{
+	border-radius:50px;
+	padding:1em 0.8em;
+	text-decoration: none;
+	display: inline-block;
+	margin:1em;
+	font-size: 
+}
+a#start{
+	border:1px solid blue;
+	color:blue;
+}
+a#end{
+	border:1px solid red;
+	color:red;
+}
+

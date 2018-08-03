@@ -52,8 +52,8 @@ class Grid extends Component{
 		return(
 			<div>
 			<RowList size={this.props.size}/>
-			<a href="#" onClick={this.startGame}>start</a>
-			<a href="#" onClick={this.endGame}> stop</a>
+			<a href="#" id="start" onClick={this.startGame}>start</a>
+			<a href="#" id="end" onClick={this.endGame}> stop</a>
 			</div>
 		);
 	}
