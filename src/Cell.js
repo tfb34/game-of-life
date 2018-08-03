@@ -13,6 +13,15 @@ class Cell extends Component{
 		};
 		this.tick = this.tick.bind(this);
 		this.getAddress = this.getAddress.bind(this);
+		this.toggle = this.toggle.bind(this);
+	}
+
+	toggle(){// when clicked this function should be called
+		if(this.state.isAlive){
+			this.tick(false);
+		}else{
+			this.tick(true);
+		}
 	}
 
 	getLifeStatus(){
@@ -52,7 +61,7 @@ class Cell extends Component{
 
   	render(){
 	    return(
-	      <div key={this.props.column} id={"col"+this.props.column} className={"cell " + (this.state.isAlive? 'alive' : 'dead')}></div>
+	      <div key={this.props.column} onClick={this.toggle} id={"col"+this.props.column} className={"cell " + (this.state.isAlive? 'alive' : 'dead')}></div>
 	    );
   	}
 
