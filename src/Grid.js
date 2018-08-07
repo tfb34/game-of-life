@@ -1,35 +1,52 @@
 import React, {Component} from "react";
 import {hot} from "react-hot-loader";
 import Cell from "./Cell.js";
-
+import './Grid.css';
 
 
 class Grid extends Component{
 	constructor(props){
 		super(props);
 		this.state ={
-			gen1: getAllCellCoords(props),
-			gen2: []
+			gen1: getAllCellCoords(props.size),
+			gen2: [],
+			size: this.props.size, //default size
+			value: this.props.size,
+			isActive: "visible",
+			startColor: "none"
 		}
 		this.startGame = this.startGame.bind(this);
 		this.endGame = this.endGame.bind(this);
+		this.changeGridSize = this.changeGridSize.bind(this);
+		this.handleChange  = this.handleChange.bind(this);
 	}
 
 	startGame(){
 	  	this.timerID = setInterval(
 	  		() => this.calculateSuccessors(),
-	  		1000// every second  for now
+	  		50// every second  for now
 	  	);
+	  	this.setState({
+	  		isActive: "none",
+	  		startColor: "pink"
+	  	});
+
 	}
 
 	endGame(){
 		clearInterval(this.timerID);
+		this.setState({
+			isActive: "visible",
+			startColor: "white"
+		});
+		console.log("end Game");
 	}
 
 	calculateSuccessors(){
 		for(let i=0;i<this.state.gen1.length;i++){
 			let r = this.state.gen1[i][0];
 			let c = this.state.gen1[i][1];
+	
 			let cell = getCell(r,c);
 			this.state.gen2[i] = cell.evaluateCell();
 		}
@@ -40,38 +57,39 @@ class Grid extends Component{
 			getCell(r,c).tick(this.state.gen2[i]);
 
 		}
-		// traverse configured gen1 
-			// find and update cell's death
-			// if there is change then add to new list
-		// update the the state of gen1 but no need to render new changes
-/*		getCell(r,c).tick();*/
+
 	}
 
+	changeGridSize(){
+		this.setState({
+			gen1: getAllCellCoords(parseInt(this.state.value)),
+			size: parseInt(this.state.value)
+		});
+		/*this.props.size = this.state.size;*/
+	}
+
+	handleChange(event){
+		this.setState({value: event.target.value});
+	}
 
 	render(){
 		return(
-			<div>
-			<RowList size={this.props.size}/>
-			<a href="#" id="start" onClick={this.startGame}>start</a>
-			<a href="#" id="end" onClick={this.endGame}> stop</a>
+			<div className="wrapper">
+				<input type="text" value={this.state.value} onChange={this.handleChange}/>
+				<button onClick={this.changeGridSize}>Enter</button>
+				
+				<RowList size={this.state.size}/>
+				<a href="javascript:;" id="start" onClick={this.startGame} style={{pointerEvents: this.state.isActive, backgroundColor: this.state.startColor}}>start</a>
+				<a href="javascript:;" id="end" onClick={this.endGame}> stop</a>
 			</div>
 		);
 	}
 }
 
-/*function repeat(num){
-	let list =[];
-
-	for(let i=0;i<num;i++){
-		list.push(<h1 key={i.toString()} className={i.toString()}>Hello</h1>);
-	}
-	return <div>{list}</div>	
-}
-*/
-function getAllCellCoords(props){
+function getAllCellCoords(max){
 	let list = [];
-	for(let row=0;row<props.size;row++){
-		for(let col=0;col<props.size;col++){
+	for(let row=0;row<max;row++){
+		for(let col=0;col<max;col++){
 			list.push([row,col]);
 		}
 	}
@@ -83,7 +101,7 @@ function RowList(props){
 	for(let i=0;i<props.size;i++){
 		children.push(<Row key={i} size={props.size} id={i}/>)
 	}
-	return <div className="grid">{children}</div>
+	return <div className="grid" style={{width: 22*props.size +'px'}}>{children}</div>
 }
 
 function Row(props){
@@ -91,14 +109,14 @@ function Row(props){
 
 
 	for(let i=0;i<props.size;i++){
-		if(props.id == 4){
+		if(props.id == 4){//Refactor
 			if(i == 3 || i==4 || i==5){
-				children.push(<Cell key={i} column={i} alive={true} row={props.id}/>)
+				children.push(<Cell key={i} gridSize={props.size} column={i} alive={true} row={props.id}/>)
 			}else{
-				children.push(<Cell key={i} column={i} alive={false} row={props.id}/>)
+				children.push(<Cell key={i} gridSize={props.size} column={i} alive={false} row={props.id}/>)
 			}
 		}else{
-		children.push(<Cell key={i} column={i} alive={false} row={props.id}/>)
+		children.push(<Cell key={i} gridSize={props.size} column={i} alive={false} row={props.id}/>)
 		}
 	}
 
@@ -124,29 +142,6 @@ function findReactElement(node) {
     return null;
 }
 
-/*function RowList(num){
-	let listRows = [];
-
-	for(let i=0; i<num;i++){
-		listRows.push(Row(i,num))
-	}
-
-	return(
-		<div className="grid">{listRows}</div>
-	);
-}
-
-function Row(id,num){
-	
-	let rowItems = [];
-	for(let i=0; i<num; i++){
-		rowItems.push(<Cell column={i.toString()}/>);
-	}
-
-	return (
-		<div key={id.toString()} className={id.toString()}>{rowItems}</div>
-	);
-}*/
 
 
 export default hot(module)(Grid);

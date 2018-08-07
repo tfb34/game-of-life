@@ -2,20 +2,25 @@ import React, {Component} from "react";
 import {hot} from "react-hot-loader";
 import './Cell.css';
 
-const max = 14;
-
 class Cell extends Component{
 	constructor(props){
 		super(props);
 		this.state = {
 			isAlive: props.alive,
-			neighbors: getNeighbors(props)
+			neighbors: getNeighbors(props),
 		};
 		this.tick = this.tick.bind(this);
 		this.getAddress = this.getAddress.bind(this);
 		this.toggle = this.toggle.bind(this);
 	}
 
+	componentDidUpdate(prevProps){
+		if(prevProps.gridSize != this.props.gridSize){
+			this.setState({
+				neighbors: getNeighbors(this.props)
+			});
+		}
+	}
 	toggle(){// when clicked this function should be called
 		if(this.state.isAlive){
 			this.tick(false);
@@ -70,30 +75,30 @@ class Cell extends Component{
 
 
 function getNeighbors(props){
-	console.log("hello");
 	let row = props.row;
 	let col = props.column;
 	let list = [];
-	console.log(row);
+
 	for(let c=col-1; c<=(col+1);c++){
 
 		list.push([row-1, c]);
 		if(c!=col) list.push([row,c]);
 		list.push([row+1,c]);
 	}
-	console.log(list);
-	return fixOutOfBounds(list);
+	
+	return fixOutOfBounds(list,props);
 }
 
-function fixOutOfBounds(list){
+function fixOutOfBounds(list,props){
 	let fixedList = list.map((coord) =>
-		[fixValue(coord[0]), fixValue(coord[1])]
+		[fixValue(coord[0],props), fixValue(coord[1],props)]
 	);
 
 	return fixedList;
 }
 
-function fixValue(x){
+function fixValue(x,props){
+	let max = props.gridSize-1;// 0 to gridSize-1
 	if(x < 0){
 		x = max;
 	}else if(x > max){
