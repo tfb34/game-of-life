@@ -23,8 +23,8 @@ class Grid extends Component{
 
 	startGame(){
 	  	this.timerID = setInterval(
-	  		() => this.calculateSuccessors(),
-	  		50// every second  for now
+	  		() => this.restart(),
+	  		1000// every second  for now
 	  	);
 	  	this.setState({
 	  		isActive: "none",
@@ -42,6 +42,10 @@ class Grid extends Component{
 		console.log("end Game");
 	}
 
+	restart(){
+		this.state.gen1 = getAllCellCoords(this.state.size);
+		this.calculateSuccessors();
+	}
 	calculateSuccessors(){
 		for(let i=0;i<this.state.gen1.length;i++){
 			let r = this.state.gen1[i][0];
@@ -57,6 +61,19 @@ class Grid extends Component{
 			getCell(r,c).tick(this.state.gen2[i]);
 
 		}
+		let newGen1 = [];
+		let cell;
+		for(let i=0;i<this.state.gen1.length;i++){
+			let r = this.state.gen1[i][0];
+			let c = this.state.gen1[i][1];
+			cell = getCell(r,c);
+			if(cell.state.change || cell.didNeighborsChange()){
+				newGen1.push([r,c]);
+			}
+		}
+		console.log("newGen1 : "+ newGen1.length);
+		console.log(newGen1);
+		this.state.gen1 = newGen1;
 
 	}
 

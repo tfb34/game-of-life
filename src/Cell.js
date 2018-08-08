@@ -3,15 +3,18 @@ import {hot} from "react-hot-loader";
 import './Cell.css';
 
 class Cell extends Component{
+
 	constructor(props){
 		super(props);
 		this.state = {
 			isAlive: props.alive,
 			neighbors: getNeighbors(props),
+			change: true
 		};
 		this.tick = this.tick.bind(this);
 		this.getAddress = this.getAddress.bind(this);
 		this.toggle = this.toggle.bind(this);
+		this.didNeighborsChange = this.didNeighborsChange.bind(this);
 	}
 
 	componentDidUpdate(prevProps){
@@ -21,12 +24,14 @@ class Cell extends Component{
 			});
 		}
 	}
+
 	toggle(){// when clicked this function should be called
 		if(this.state.isAlive){
 			this.tick(false);
 		}else{
 			this.tick(true);
 		}
+		this.state.change = true;
 	}
 
 	getLifeStatus(){
@@ -39,7 +44,7 @@ class Cell extends Component{
 		});
 	}
 	// returns true if cell is alive else false
-	evaluateCell(){
+	evaluateCell(){// change state of change but don't render anything
 		let liveNeighbors = 0;
 		for(let i=0;i<this.state.neighbors.length;i++){
 			//get cell and obtain its state
@@ -57,7 +62,25 @@ class Cell extends Component{
 		}else if(liveNeighbors == 3){
 			lifeStatus = true;
 		}
+		
+		if(lifeStatus != this.state.isAlive){
+			this.state.change = true;
+		}else{
+			this.state.change = false;
+		}
 		return lifeStatus;
+	}
+
+	didNeighborsChange(){
+		for(let i=0;i<8;i++){
+			let r = this.state.neighbors[i][0];
+			let c = this.state.neighbors[i][1];
+			
+			if(getCell(r,c).state.change){
+				return true;	
+			}
+		}
+		return false;
 	}
 
 	getAddress(){
