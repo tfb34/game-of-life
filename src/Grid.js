@@ -71,8 +71,8 @@ class Grid extends Component{
 				newGen1.push([r,c]);
 			}
 		}
-		console.log("newGen1 : "+ newGen1.length);
-		console.log(newGen1);
+/*		console.log("newGen1 : "+ newGen1.length);
+		console.log(newGen1);*/
 		this.state.gen1 = newGen1;
 
 	}
